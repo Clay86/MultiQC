@@ -8,6 +8,7 @@ from .coverage_per_contig import DragenCoveragePerContig
 from .coverage_metrics import DragenCoverageMetrics
 from .coverage_hist import DragenCoverageHist
 from .tmb import DragenTMBMetrics
+from .coverage_metrics_covRegion import DragenCoverageRegionMetrics
 
 import logging
 
@@ -23,6 +24,7 @@ class MultiqcModule(
     DragenCoverageMetrics,
     DragenCoverageHist,
     DragenTMBMetrics,
+    DragenCoverageRegionMetrics
 ):
     """DRAGEN provides a number of differrent pipelines and outputs, including base calling, DNA and RNA alignment,
     post-alignment processing and variant calling, covering virtually all stages of typical NGS data processing.
@@ -68,6 +70,10 @@ class MultiqcModule(
         # <output prefix>.(wgs|target_bed)_coverage_metrics_(tumor|normal)?.csv
         # general stats table and a dedicated table
         samples_found |= self.add_coverage_metrics()
+
+        # <output prefix>.(wgs|target_bed)_coverage_metrics_(tumor|normal)?.csv
+        # general stats table and a dedicated table
+        samples_found |= self.add_coverage_region_metrics()
 
         # <output prefix>.(wgs|target_bed)_contig_mean_cov_(tumor|normal)?.csv
         # a histogram like in mosdepth, with each chrom as a category on X axis, plus a category

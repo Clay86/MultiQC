@@ -260,11 +260,13 @@ dragen/vc_metrics:
 dragen/ploidy_estimation_metrics:
   fn: "*.ploidy_estimation_metrics.csv"
 dragen/contig_mean_cov:
-  fn_re: '.*\.(wgs|target_bed)_contig_mean_cov_?(tumor|normal)?\.csv'
+  fn_re: '.*\.(target_bed|qc-coverage-region-1|wgs)_contig_mean_cov_?(tumor|normal)?\.csv'
 dragen/coverage_metrics:
-  fn_re: '.*\.(wgs|target_bed)_coverage_metrics_?(tumor|normal)?\.csv'
+  fn_re: '.*\.wgs_coverage_metrics_?(tumor|normal)?\.csv'
+dragen/coverage_region_metrics:
+  fn_re: '.*\.(target_bed|qc-coverage-region-1)_coverage_metrics_?(tumor|normal)?\.csv'
 dragen/fine_hist:
-  fn_re: '.*\.(wgs|target_bed)_fine_hist_?(tumor|normal)?\.csv'
+  fn_re: '.*\.(target_bed|qc-coverage-region-1|wgs)_fine_hist_?(tumor|normal)?\.csv'
 dragen/fragment_length_hist:
   fn: "*.fragment_length_hist.csv"
 dragen/tmb:

@@ -19,12 +19,12 @@ log = logging.getLogger(__name__)
 NAMESPACE = "DRAGEN coverage"
 
 
-class DragenCoverageMetrics(BaseMultiqcModule):
-    def add_coverage_metrics(self):
+class DragenCoverageRegionMetrics(BaseMultiqcModule):
+    def add_coverage_region_metrics(self):
         data_by_phenotype_by_sample = defaultdict(dict)
 
-        for f in self.find_log_files("dragen/coverage_metrics"):
-            s_name, data_by_phenotype = parse_coverage_metrics(f)
+        for f in self.find_log_files("dragen/coverage_region_metrics"):
+            s_name, data_by_phenotype = parse_coverage_region_metrics(f)
             s_name = self.clean_s_name(s_name, f)
             if s_name in data_by_phenotype_by_sample:
                 log.debug(f"Duplicate sample name found! Overwriting: {s_name}")
@@ -58,10 +58,11 @@ class DragenCoverageMetrics(BaseMultiqcModule):
         self.general_stats_addcols(data_by_sample, gen_stats_headers, namespace=NAMESPACE)
 
         self.add_section(
-            name="Coverage metrics",
+            name="Coverage metrics over Target Region",
             anchor="dragen-cov-metrics",
             description="""
-            Coverage metrics over a region (i.e. the whole genome). Press the `Help` button for details.
+            Coverage metrics over a region (where the region can be a target region,
+            or a QC coverage region). Press the `Help` button for details.
             """,
             helptext="""
             The following criteria are used when calculating coverage:
@@ -88,25 +89,25 @@ COV_METRICS = list(
         [
             [
                 Metric(
-                    m.id,
-                    m.title,
+                    m.id.replace("{}", "QC coverage region"),
+                    m.title.replace("{}", "QC coverage region"),
                     in_genstats=m.in_genstats,
                     in_own_tabl=m.in_own_tabl,
                     unit=m.unit,
-                    descr=m.descr,
+                    descr=m.descr.replace("{}", "QC coverage region"),
                     namespace=NAMESPACE,
                     precision=m.precision,
                 ),
                 Metric(
-                    m.id.replace("{}", "genome"),
-                    m.title.replace("{}", "genome"),
+                    m.id.replace("{}", "target region"),
+                    m.title.replace("{}", "target bed"),
                     in_genstats=m.in_genstats,
                     in_own_tabl=m.in_own_tabl,
                     unit=m.unit,
-                    descr=m.descr.replace("{}", "genome"),
+                    descr=m.descr.replace("{}", "target region"),
                     namespace=NAMESPACE,
                     precision=m.precision,
-                )
+                ),
             ]
             for m in [
                 # id_in_data                                            title (display name)  gen_stats  cov_table  unit  description  precision
@@ -312,7 +313,7 @@ COV_METRICS = list(
 )
 
 
-def parse_coverage_metrics(f):
+def parse_coverage_region_metrics(f):
     """
     T_SRR7890936_50pc.wgs_coverage_metrics_normal.csv
     T_SRR7890936_50pc.wgs_coverage_metrics_tumor.csv

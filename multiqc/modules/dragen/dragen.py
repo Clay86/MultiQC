@@ -7,6 +7,7 @@ from .vc_metrics import DragenVCMetrics
 from .coverage_per_contig import DragenCoveragePerContig
 from .coverage_metrics import DragenCoverageMetrics
 from .coverage_hist import DragenCoverageHist
+from .tmb import DragenTMBMetrics
 
 import logging
 
@@ -21,6 +22,7 @@ class MultiqcModule(
     DragenCoveragePerContig,
     DragenCoverageMetrics,
     DragenCoverageHist,
+    DragenTMBMetrics,
 ):
     """DRAGEN provides a number of differrent pipelines and outputs, including base calling, DNA and RNA alignment,
     post-alignment processing and variant calling, covering virtually all stages of typical NGS data processing.
@@ -80,6 +82,10 @@ class MultiqcModule(
         # <output prefix>.fragment_length_hist.csv
         samples_found |= self.add_fragment_length_hist()
 
+        # TMB estimation
+        # <output prefix>.tmb.metrics.csv
+        samples_found |= self.add_tmb_metrics()
+        
         if len(samples_found) == 0:
             raise UserWarning
         log.info("Found {} reports".format(len(samples_found)))

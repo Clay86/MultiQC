@@ -267,6 +267,8 @@ dragen/fine_hist:
   fn_re: '.*\.(wgs|target_bed)_fine_hist_?(tumor|normal)?\.csv'
 dragen/fragment_length_hist:
   fn: "*.fragment_length_hist.csv"
+dragen/tmb:
+  fn: "*.tmb.metrics.csv"
 dragen/mapping_metrics:
   fn: "*.mapping_metrics.csv"
   contents: "Number of unique reads (excl. duplicate marked reads)"

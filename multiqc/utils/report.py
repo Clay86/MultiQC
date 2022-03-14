@@ -93,7 +93,7 @@ def init():
     global searchfiles
     searchfiles = list()
 
-    # Make a dict of discovered files for each seach key
+    # Make a dict of discovered files for each search key
     global files
     files = dict()
 

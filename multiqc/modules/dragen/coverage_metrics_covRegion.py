@@ -112,6 +112,14 @@ COV_METRICS = list(
             for m in [
                 # id_in_data                                            title (display name)  gen_stats  cov_table  unit  description  precision
                 # Read stats:
+                Metric(
+                    "Average alignment coverage over {}",
+                    "Depth over {}",
+                    "#",
+                    "#",
+                    "x",
+                    "Coverage depth over {}: number of uniquely mapped bases to {} divided by the number of sites in {}.",
+                ),
                 Metric("Aligned reads", "Aln reads", "hid", "#", "reads", "Total number of aligned reads."),
                 Metric(
                     "Aligned reads in {}",
@@ -129,14 +137,6 @@ COV_METRICS = list(
                     "%",
                     "bases",
                     "Number of uniquely mapped bases to the region relative to the number of uniquely mapped bases to the genome.",
-                ),
-                Metric(
-                    "Average alignment coverage over {}",
-                    "Depth over {}",
-                    "#",
-                    "#",
-                    "x",
-                    "Coverage depth over {}: number of uniquely mapped bases to {} divided by the number of sites in {}.",
                 ),
                 Metric(
                     "Uniformity of coverage (PCT > 0.2*mean) over {}",

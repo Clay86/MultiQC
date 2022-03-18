@@ -9,6 +9,7 @@ from .coverage_metrics import DragenCoverageMetrics
 from .coverage_hist import DragenCoverageHist
 from .tmb import DragenTMBMetrics
 from .coverage_metrics_covRegion import DragenCoverageRegionMetrics
+from .cnv import DragenCNVMetrics
 
 import logging
 
@@ -24,7 +25,8 @@ class MultiqcModule(
     DragenCoverageMetrics,
     DragenCoverageHist,
     DragenTMBMetrics,
-    DragenCoverageRegionMetrics
+    DragenCoverageRegionMetrics,
+    DragenCNVMetrics
 ):
     """DRAGEN provides a number of differrent pipelines and outputs, including base calling, DNA and RNA alignment,
     post-alignment processing and variant calling, covering virtually all stages of typical NGS data processing.
@@ -59,9 +61,17 @@ class MultiqcModule(
         # a dedicated table and the total number of Variants into the general stats table
         samples_found |= self.add_vc_metrics()
 
-        # <output prefix>.ploidy_estimation_metrics.csv
-        # a "Ploidy estimation" column in the general stats table
-        samples_found |= self.add_ploidy_estimation_metrics()
+        # CNV estimation
+        # <output prefix>.cnv.metrics.csv
+        samples_found |= self.add_cnv_metrics()
+
+        # TMB estimation
+        # <output prefix>.tmb.metrics.csv
+        samples_found |= self.add_tmb_metrics()
+
+        # <output prefix>.(wgs|target_bed)_coverage_metrics_(tumor|normal)?.csv
+        # general stats table and a dedicated table
+        samples_found |= self.add_coverage_region_metrics()
 
         # <output prefix>.(wgs|target_bed)_fine_hist_(tumor|normal)?.csv
         # coverage distribution and cumulative coverage plots
@@ -70,10 +80,6 @@ class MultiqcModule(
         # <output prefix>.(wgs|target_bed)_coverage_metrics_(tumor|normal)?.csv
         # general stats table and a dedicated table
         samples_found |= self.add_coverage_metrics()
-
-        # <output prefix>.(wgs|target_bed)_coverage_metrics_(tumor|normal)?.csv
-        # general stats table and a dedicated table
-        samples_found |= self.add_coverage_region_metrics()
 
         # <output prefix>.(wgs|target_bed)_contig_mean_cov_(tumor|normal)?.csv
         # a histogram like in mosdepth, with each chrom as a category on X axis, plus a category
@@ -87,10 +93,10 @@ class MultiqcModule(
         # a histogram plot
         # <output prefix>.fragment_length_hist.csv
         samples_found |= self.add_fragment_length_hist()
-
-        # TMB estimation
-        # <output prefix>.tmb.metrics.csv
-        samples_found |= self.add_tmb_metrics()
+        
+        # <output prefix>.ploidy_estimation_metrics.csv
+        # a "Ploidy estimation" column in the general stats table
+        samples_found |= self.add_ploidy_estimation_metrics()
         
         if len(samples_found) == 0:
             raise UserWarning

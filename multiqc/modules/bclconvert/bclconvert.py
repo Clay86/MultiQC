@@ -29,7 +29,7 @@ class MultiqcModule(BaseMultiqcModule):
         self.last_run_id = None
         self.cluster_length = None
         self.multiple_sequencing_runs = False
-        bclconvert_demuxes, bclconvert_qmetrics = self._collate_log_files()
+        bclconvert_demuxes, bclconvert_qmetrics, bclconvert_adapters = self._collate_log_files()
         self.num_demux_files = len(bclconvert_demuxes)
 
         self.bclconvert_data = dict()
@@ -44,6 +44,8 @@ class MultiqcModule(BaseMultiqcModule):
             self.parse_demux_data(demux)
         for qmetric in bclconvert_qmetrics:
             self.parse_qmetrics_data(qmetric)
+        for adapter in bclconvert_adapters:
+            self.parse_adapter_metrics_data(adapter)
 
         if self.num_demux_files == 0:
             raise UserWarning
@@ -229,6 +231,7 @@ class MultiqcModule(BaseMultiqcModule):
         dict["one_mismatch_index_reads"] = 0
         dict["basesQ30"] = 0
         dict["mean_quality"] = 0
+        dict["adapterbases"] = 0
 
     def _parse_single_runinfo_file(self, runinfo_file):
         # get run id and readlength from RunInfo.xml
@@ -258,6 +261,7 @@ class MultiqcModule(BaseMultiqcModule):
         demuxes = self._find_log_files_and_sort("bclconvert/demux", "root")
         qmetrics = self._find_log_files_and_sort("bclconvert/quality_metrics", "root")  # v3.9.3 and above
         runinfos = self._find_log_files_and_sort("bclconvert/runinfo", "root")
+        adapters = self._find_log_files_and_sort("bclconvert/adaptermetrics", "root")
 
         if not len(demuxes) == len(runinfos):
             log.error(
@@ -279,6 +283,10 @@ class MultiqcModule(BaseMultiqcModule):
                     qmetrics[idx]["run_id"] = rundata["run_id"]
                 except IndexError:
                     pass
+                try:
+                    adapters[idx]["run_id"] = rundata["run_id"]
+                except IndexError:
+                    pass
 
             if self.last_run_id and rundata["run_id"] != self.last_run_id:
                 self.multiple_sequencing_runs = (
@@ -294,7 +302,7 @@ class MultiqcModule(BaseMultiqcModule):
                 raise UserWarning
             self.cluster_length = rundata["cluster_length"]
 
-        return demuxes, qmetrics
+        return demuxes, qmetrics, adapters
 
     def _recalculate_undetermined(self):
         # We have to calculate "corrected" unknown read counts when parsing more than one bclconvert run. To do this:
@@ -347,14 +355,12 @@ class MultiqcModule(BaseMultiqcModule):
 
                 # total lane stats
                 lane["reads"] += int(row["# Reads"])
-                lane["yield"] += int(row["# Reads"]) * (self.cluster_length)
                 lane["perfect_index_reads"] += int(row["# Perfect Index Reads"])
                 lane["one_mismatch_index_reads"] += int(row["# One Mismatch Index Reads"])
                 lane["basesQ30"] += int(row.get("# of >= Q30 Bases (PF)", "0"))  # Column only present pre v3.9.3
 
                 # stats for this sample in this lane
                 lane_sample["reads"] += int(row["# Reads"])
-                lane_sample["yield"] += int(row["# Reads"]) * (self.cluster_length)
                 lane_sample["perfect_index_reads"] += int(row["# Perfect Index Reads"])
                 lane_sample["one_mismatch_index_reads"] += int(row["# One Mismatch Index Reads"])
                 lane_sample["basesQ30"] += int(row.get("# of >= Q30 Bases (PF)", "0"))  # Column only present pre v3.9.3
@@ -395,7 +401,33 @@ class MultiqcModule(BaseMultiqcModule):
                 # Parse the stats that moved to this file in v3.9.3
                 lane["basesQ30"] += int(row["YieldQ30"])
                 lane_sample["basesQ30"] += int(row["YieldQ30"])
+                lane["yield"] += int(row["Yield"])
+                lane_sample["yield"] += int(row["Yield"])
                 lane_sample["mean_quality"] += float(row["Mean Quality Score (PF)"])
+
+    def parse_adapter_metrics_data(self, myfile):
+        # parse a bclconvert output stats csv, populate variables appropriately
+        filename = str(os.path.join(myfile["root"], myfile["fn"]))
+        self.total_reads_in_lane_per_file[filename] = dict()
+
+        reader = csv.DictReader(open(filename), delimiter=",")
+        for row in reader:
+            run_data = self.bclconvert_data[myfile["run_id"]]
+            lane_id = "L{}".format(row["Lane"])
+            if lane_id not in run_data:
+                log.warn(f"Found unrecognised lane {lane_id} in Adapter Metrics file, skipping")
+                continue
+            lane = run_data[lane_id]
+            sample = row["Sample_ID"]
+            if sample != "Undetermined":  # dont include undetermined reads at all in any of the calculations...
+                if sample not in run_data[lane_id]["samples"]:
+                    log.warn(f"Found unrecognised sample {sample} in Adapter Metrics file, skipping")
+                    continue
+                lane_sample = run_data[lane_id]["samples"][sample]  # this sample in this lane
+
+                # Parse the stats that moved to this file in v3.9.3
+                lane["adapterbases"] += int(row["AdapterBases"])
+                lane_sample["adapterbases"] += int(row["AdapterBases"])
 
     def _parse_top_unknown_barcodes(self):
         run_data = self.bclconvert_data[self.last_run_id]
@@ -422,9 +454,22 @@ class MultiqcModule(BaseMultiqcModule):
                 totalreads += lane["reads"]
         return totalreads
 
+    def _total_yield_for_run(self, run_id):
+        totalyield = 0
+        for lane_id, lane in self.bclconvert_data[run_id].items():
+            totalyield += lane["yield"]
+        return totalyield
+
+    def _total_yield_all_runs(self):
+        totalyield = 0
+        for key, run_data in self.bclconvert_data.items():
+            for lane_id, lane in run_data.items():
+                totalyield += lane["yield"]
+        return totalyield
+
     def _set_lane_percentage_stats(self, data):
         try:
-            data["percent_Q30"] = (float(data["basesQ30"]) / float(data["reads"] * (self.cluster_length))) * 100.0
+            data["percent_Q30"] = (float(data["basesQ30"]) / float(data["yield"])) * 100.0
         except ZeroDivisionError:
             data["percent_Q30"] = "NA"
         try:
@@ -461,6 +506,7 @@ class MultiqcModule(BaseMultiqcModule):
                     "percent_Q30": lane["percent_Q30"],
                     "percent_perfectIndex": lane["percent_perfectIndex"],
                     "percent_oneMismatch": lane["percent_oneMismatch"],
+                    "adapterbases": lane["adapterbases"],
                     "top_unknown_barcodes": self.get_unknown_barcodes(lane["top_unknown_barcodes"])
                     if "top_unknown_barcodes" in lane
                     else {},
@@ -480,6 +526,7 @@ class MultiqcModule(BaseMultiqcModule):
                     s["one_mismatch_index_reads"] += int(sample["one_mismatch_index_reads"])
                     s["basesQ30"] += int(sample["basesQ30"])
                     s["mean_quality"] += float(sample["mean_quality"])
+                    s["adapterbases"] += float(sample["adapterbases"])
 
                     try:
                         if "depth" not in s:
@@ -510,6 +557,8 @@ class MultiqcModule(BaseMultiqcModule):
     def sample_stats_table(self):
         sample_stats_data = dict()
         total_reads = self._total_reads_all_runs()
+        total_yield = self._total_yield_all_runs()
+
 
         for sample_id, sample in self.bclconvert_bysample.items():
             # percent stats for bclconvert-bysample i.e. stats for sample across all lanes
@@ -530,7 +579,7 @@ class MultiqcModule(BaseMultiqcModule):
                 yield_q30_percent = "0.0"  #
 
             try:
-                percent_yield = (float(sample["yield"]) / float((total_reads) * (self.cluster_length))) * 100.0
+                percent_yield = (float(sample["yield"]) / float(total_yield)) * 100.0
             except ZeroDivisionError:
                 percent_yield = "NA"
 
@@ -551,6 +600,7 @@ class MultiqcModule(BaseMultiqcModule):
                 # "one_mismatch_index_reads": sample['one_mismatch_index_reads'],
                 "perfect_pecent": perfect_percent,
                 "one_mismatch_pecent": one_mismatch_pecent,
+                "adapterbases": sample["adapterbases"]
             }
 
         headers = OrderedDict()
@@ -631,6 +681,12 @@ class MultiqcModule(BaseMultiqcModule):
             "min": 0,
             "scale": "RdYlGn",
             "suffix": "%",
+        }
+        headers["adapterbases"] = {
+            "title": "Adapter bases",
+            "description": "Number of Adapter Bases",
+            "scale": "Blues",
+            "shared_key": "base_count",
         }
 
         # Table config

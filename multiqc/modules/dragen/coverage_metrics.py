@@ -196,7 +196,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [1x:inf)",
-                    "⩾1x",
+                    "⩾1x in {}",
                     "hid",
                     "#",
                     "%",
@@ -204,7 +204,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [3x:inf)",
-                    "⩾3x",
+                    "⩾3x in {}",
                     None,
                     "hid",
                     "%",
@@ -212,7 +212,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [10x:inf)",
-                    "⩾10x",
+                    "⩾10x in {}",
                     None,
                     "#",
                     "%",
@@ -220,7 +220,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [15x:inf)",
-                    "⩾15x",
+                    "⩾15x in {}",
                     None,
                     "hid",
                     "%",
@@ -228,15 +228,15 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [20x:inf)",
-                    "⩾20x",
-                    "#",
+                    "⩾20x in {}",
+                    "hid",
                     "#",
                     "%",
                     "Percentage of sites in region with at least 20x coverage.",
                 ),
                 Metric(
                     "PCT of genome with coverage [50x:inf)",
-                    "⩾50x",
+                    "⩾50x in {}",
                     "hid",
                     "#",
                     "%",
@@ -244,7 +244,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [100x:inf)",
-                    "⩾100x",
+                    "⩾100x in {}",
                     "hid",
                     "#",
                     "%",
@@ -252,7 +252,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [0x:1x)",
-                    "0x",
+                    "0x in {}",
                     None,
                     "hid",
                     "%",
@@ -260,7 +260,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [1x:3x)",
-                    "1x..3x",
+                    "1x..3x in {}",
                     None,
                     "hid",
                     "%",
@@ -268,7 +268,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [3x:10x)",
-                    "3x..10x",
+                    "3x..10x in {}",
                     None,
                     "hid",
                     "%",
@@ -276,7 +276,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [10x:15x)",
-                    "10x..15x",
+                    "10x..15x in {}",
                     None,
                     "hid",
                     "%",
@@ -284,7 +284,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [15x:20x)",
-                    "15x..20x",
+                    "15x..20x in {}",
                     None,
                     "hid",
                     "%",
@@ -292,7 +292,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [20x:50x)",
-                    "20x..50x",
+                    "20x..50x in {}",
                     "hid",
                     "hid",
                     "%",
@@ -300,7 +300,7 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "PCT of genome with coverage [50x:100x)",
-                    "50x..100x",
+                    "50x..100x in {}",
                     "hid",
                     "hid",
                     "%",
@@ -387,5 +387,5 @@ def parse_coverage_metrics(f):
             data[metric + " pct"] = percentage
 
     m = re.search(r"(.*)\.(\S*)_coverage_metrics_?(\S*)?.csv", f["fn"])
-    sample, phenotype = m.group(1), m.group(2)
+    sample, phenotype = m.group(1), m.group(3)
     return sample, {phenotype: data}

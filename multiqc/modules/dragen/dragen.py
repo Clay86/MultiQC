@@ -57,18 +57,6 @@ class MultiqcModule(
 
         samples_found = set()
 
-        # <output prefix>.vc_metrics.csv
-        # a dedicated table and the total number of Variants into the general stats table
-        samples_found |= self.add_vc_metrics()
-
-        # CNV estimation
-        # <output prefix>.cnv.metrics.csv
-        samples_found |= self.add_cnv_metrics()
-
-        # TMB estimation
-        # <output prefix>.tmb.metrics.csv
-        samples_found |= self.add_tmb_metrics()
-
         # <output prefix>.(wgs|target_bed)_coverage_metrics_(tumor|normal)?.csv
         # general stats table and a dedicated table
         samples_found |= self.add_coverage_region_metrics()
@@ -97,7 +85,20 @@ class MultiqcModule(
         # <output prefix>.ploidy_estimation_metrics.csv
         # a "Ploidy estimation" column in the general stats table
         samples_found |= self.add_ploidy_estimation_metrics()
-        
+
+        # <output prefix>.vc_metrics.csv
+        # a dedicated table and the total number of Variants into the general stats table
+        samples_found |= self.add_vc_metrics()
+
+        # CNV estimation
+        # <output prefix>.cnv.metrics.csv
+        samples_found |= self.add_cnv_metrics()
+
+        # TMB estimation
+        # <output prefix>.tmb.metrics.csv
+        samples_found |= self.add_tmb_metrics()
+
+
         if len(samples_found) == 0:
             raise UserWarning
         log.info("Found {} reports".format(len(samples_found)))

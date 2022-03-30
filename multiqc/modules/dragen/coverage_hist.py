@@ -144,5 +144,5 @@ def parse_fine_hist(f):
         cum_data[depth] = cum_pct
 
     m = re.search(r"(.*)\.(\S*)_fine_hist_?(\S*)?.csv", f["fn"])
-    sample, phenotype = m.group(1), m.group(2)
+    sample, phenotype = m.group(1), m.group(3)
     return sample, {phenotype: (data, cum_data, depth_1pc)}

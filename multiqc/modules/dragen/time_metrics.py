@@ -44,7 +44,13 @@ class DragenTimeMetrics(BaseMultiqcModule):
 
         gen_stats_headers, time_table_headers = make_headers(all_metric_names, TIME_METRICS)
 
+        for s in data_by_sample:
+            for m in all_metric_names:
+                if m not in data_by_sample[s].keys():
+                    data_by_sample[s][m] = ""
+
         self.general_stats_addcols(data_by_sample, gen_stats_headers, namespace=NAMESPACE)
+
 
         self.add_section(
             name="Time Metrics",

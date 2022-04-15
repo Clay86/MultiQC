@@ -178,8 +178,8 @@ def parse_reports(self):
         self.general_stats_headers["MEAN_TARGET_COVERAGE"] = {
             "title": "mean target coverage",
         }
-        self.general_stats_headers["PCT_EXC_DUPL"] = {
-            "title": "Dupliacte rate",
+        self.general_stats_headers["PCT_EXC_DUPE"] = {
+            "title": "Duplicate rate",
             "modify":lambda x: x * 100.0,
             "suffix":"%"
         }

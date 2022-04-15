@@ -254,7 +254,7 @@ COV_METRICS = list(
                 Metric(
                     "PCT of {} with coverage [0x:1x)",
                     "0x in {}",
-                    None,
+                    "#",
                     "hid",
                     "%",
                     "Percentage of sites in region with no coverage.",

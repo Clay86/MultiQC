@@ -253,7 +253,7 @@ COV_METRICS = list(
                 Metric(
                     "PCT of genome with coverage [0x:1x)",
                     "0x in {}",
-                    None,
+                    "hid",
                     "hid",
                     "%",
                     "Percentage of sites in region with no coverage.",

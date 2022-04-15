@@ -222,7 +222,7 @@ def parse_time_metrics_file(f):
     data = defaultdict(dict)
 
     for line in f["f"].splitlines():
-        _, _, metric, stat, _ = line.split(",")
+        _, _, metric, _, stat = line.split(",")
         try:
             stat = float(stat)
         except ValueError:

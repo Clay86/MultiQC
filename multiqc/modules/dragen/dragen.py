@@ -11,6 +11,7 @@ from .tmb import DragenTMBMetrics
 from .coverage_metrics_covRegion import DragenCoverageRegionMetrics
 from .cnv import DragenCNVMetrics
 from .msi import DragenMsiMetrics
+from .time_metrics import DragenTimeMetrics
 
 import logging
 
@@ -28,7 +29,8 @@ class MultiqcModule(
     DragenTMBMetrics,
     DragenCoverageRegionMetrics,
     DragenCNVMetrics,
-    DragenMsiMetrics
+    DragenMsiMetrics,
+    DragenTimeMetrics
 ):
     """DRAGEN provides a number of differrent pipelines and outputs, including base calling, DNA and RNA alignment,
     post-alignment processing and variant calling, covering virtually all stages of typical NGS data processing.
@@ -103,6 +105,10 @@ class MultiqcModule(
         # MSI estimation
         # <output prefix>.microsat_output.json
         samples_found |= self.add_msi_metrics()
+
+        # time metrics
+        # <output prefix>.time_metrics.csv
+        samples_found |= self.add_time_metrics()
 
 
         if len(samples_found) == 0:

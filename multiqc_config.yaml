@@ -1,0 +1,89 @@
+run_modules:
+  - dragen
+  - picard
+
+title: "QC Metrics Summary"
+intro_text: ""
+
+report_header_info:
+  - Contact E-mail: "dummy@tyrolpath.at"
+  - Application Type: "Whole Exome Sequencing"
+  - Sequencing Platform: "Illumina NovaSeq6000"
+  - Sequencing Setup: "2x150"
+
+custom_plot_config:
+  # Add a coloured band in the background to show what is a good result
+  # Yes I know this doesn't make sense for this plot, it's just an example ;)
+  dragen_coverage_dist:
+    xPlotBands:
+      - from: 0
+        to: 250
+        color: "#CB433520"
+      - from: 250
+        to: 350
+        color: "#F4D03F20"
+      - from: 350
+        to: 3000
+        color: "#27AE6020"
+
+table_cond_formatting_rules:
+  mqc-generalstats-dragen_coverage-Average_alignment_coverage_over_QC_coverage_region:
+    warn:
+      - lt: 350
+    fail:
+      - lt: 300
+  mqc-generalstats-dragen_coverage-Aligned_reads_in_QC_coverage_region_pct:
+    warn:
+      - lt: 65
+    fail:
+      - lt: 60
+  mqc-generalstats-dragen_coverage-PCT_of_QC_coverage_region_with_coverage_20x_inf:
+    warn:
+      - lt: 96
+    fail:
+      - lt: 94
+  mqc-generalstats-dragen_mapping-Q30_bases_pct:
+    warn:
+      - lt : 90
+    fail:
+      - lt: 88
+  mqc-generalstats-dragen_coverage-PCT_of_QC_coverage_region_with_coverage_0x_1x:
+    warn:
+      - gt: 2
+    fail:
+      - gt: 2.25
+  mqc-generalstats-dragen_mapping-Unmapped_reads_pct:
+    warn:
+      - gt: 1.2
+    fail:
+      - gt: 1.5
+  mqc-generalstats-dragen_mapping-Number_of_duplicate_marked_reads_pct:
+    warn:
+      - gt: 25
+    fail:
+      - gt: 50
+  mqc-generalstats-dragen_mapping-Properly_paired_reads_pct:
+    warn:
+      - lt: 97
+    fail:
+      - lt: 95
+  mqc-generalstats-dragen_mapping-Insert_length_median:
+    warn:
+      - lt: 175
+    fail:
+      - lt: 150
+  mqc-generalstats-dragen_coverage-Uniformity_of_coverage_PCT_0_2_mean_over_target_region:
+    warn:
+      - lt: 92.5
+    fail:
+      - lt: 90
+  mqc-generalstats-picard-PCT_EXC_OVERLAP:
+    fail:
+      - gt: 15
+  mqc-generalstats-picard-FOLD_80_BASE_PENALTY:
+    fail:
+      - gt: 1.5
+  mqc-generalstats-picard-PCT_TARGET_BASES_30X:
+    fail:
+      - lt: 90
+  

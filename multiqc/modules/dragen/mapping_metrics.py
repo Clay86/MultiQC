@@ -603,7 +603,7 @@ MAPPING_METRICS = [
         "It also does not count a mismatch if either the reference base or read base is N",
         the_higher_the_worse=True,
     ),
-    Metric("Q30 bases", "Q30", "hid", "hid", "bases", "Number of raw bases with BQ >= 30, {}"),
+    Metric("Q30 bases", "Q30", "#", "hid", "bases", "Number of raw bases with BQ >= 30, {}"),
     Metric("Q30 bases R1", "Q30 R1", None, "hid", "bases", "Number of raw bases on R1 reads with BQ >= 30, {}"),
     Metric("Q30 bases R2", "Q30 R2", None, "hid", "bases", "Number of raw bases on R2 reads with BQ >= 30, {}"),
     Metric(

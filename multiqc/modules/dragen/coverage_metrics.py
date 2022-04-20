@@ -140,10 +140,10 @@ COV_METRICS = list(
                 Metric(
                     "Uniformity of coverage (PCT > 0.2*mean) over {}",
                     ">0.2×mean",
-                    "hid",
+                    "#",
                     "#",
                     "%",
-                    "Percentage of sites with coverage greater than 20% of the mean coverage in region. Demonstrates the uniformity of coverage. The lower the better.",
+                    "Percentage of sites with coverage greater than 20% of the mean coverage in region. Demonstrates the uniformity of coverage.",
                 ),
                 Metric(
                     "Average chr X coverage over {}",

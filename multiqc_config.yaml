@@ -27,17 +27,17 @@ custom_plot_config:
         color: "#27AE6020"
 
 table_cond_formatting_rules:
-  mqc-generalstats-dragen_coverage-Average_alignment_coverage_over_QC_coverage_region:
+  mqc-generalstats-dragen_coverage-Average_alignment_coverage_over_target_region:
     warn:
       - lt: 350
     fail:
       - lt: 300
-  mqc-generalstats-dragen_coverage-Aligned_reads_in_QC_coverage_region_pct:
+  mqc-generalstats-dragen_coverage-Aligned_reads_in_target_region_pct:
     warn:
       - lt: 65
     fail:
       - lt: 60
-  mqc-generalstats-dragen_coverage-PCT_of_QC_coverage_region_with_coverage_20x_inf:
+  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_20x_inf:
     warn:
       - lt: 96
     fail:
@@ -47,7 +47,7 @@ table_cond_formatting_rules:
       - lt : 90
     fail:
       - lt: 88
-  mqc-generalstats-dragen_coverage-PCT_of_QC_coverage_region_with_coverage_0x_1x:
+  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_0x_1x:
     warn:
       - gt: 2
     fail:

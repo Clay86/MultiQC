@@ -86,4 +86,4 @@ table_cond_formatting_rules:
   mqc-generalstats-picard-PCT_TARGET_BASES_30X:
     fail:
       - lt: 90
-  
+

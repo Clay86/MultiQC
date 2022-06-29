@@ -1,6 +1,5 @@
 
 # MultiQC files
-multiqc_config.yaml
 multiqc_report.html
 multiqc_data
 

@@ -639,4 +639,6 @@ MAPPING_METRICS = [
         "referred to as the representative alignment, the other are supplementary",
         precision=2,
     ),
+    Metric("Estimated sample contamination", "Estimated sample contamination", "hid", "#", "%", "Estimated sample contamination"),
+    Metric("Estimated sample contamination standard error", "Estimated sample contamination standard error", None, "hid", "%", "Estimated sample contamination standard error"),
 ]

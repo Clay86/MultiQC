@@ -78,7 +78,7 @@ TIME_METRICS = [
         Metric(
             "Total runtime",
             "Total runtime",
-            '#',
+            'hid',
             '#',
             descr="Total runtime"
         ),
@@ -141,7 +141,7 @@ TIME_METRICS = [
         Metric(
             "Time variant calling",
             "Time variant calling",
-            '#',
+            'hid',
             '#',
             descr="Time variant calling"
         ),

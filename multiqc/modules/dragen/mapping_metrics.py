@@ -408,7 +408,7 @@ MAPPING_METRICS = [
     Metric("Mapped reads", "Map", "hid", "hid", "reads", "Number of mapped reads, {}"),
     Metric("Mapped reads R1", "Map R1", None, "hid", "reads", "Number of mapped reads R1, {}"),
     Metric("Mapped reads R2", "Map R2", None, "hid", "reads", "Number of mapped reads R2, {}"),
-    Metric("Unmapped reads", "Unmap", "%", "%", "reads", "Number of unmapped reads, {}", the_higher_the_worse=True),
+    Metric("Unmapped reads", "Unmap", "hid", "%", "reads", "Number of unmapped reads, {}", the_higher_the_worse=True),
     Metric("Reads with MAPQ [40:inf)", "MQ⩾40", None, "hid", "reads", "Number of reads with MAPQ [40:inf), {}"),
     Metric(
         "Number of duplicate marked reads",
@@ -456,7 +456,7 @@ MAPPING_METRICS = [
     Metric(
         "Properly paired reads",
         "Prop pair",
-        "%",
+        "hid",
         "%",
         "reads",
         "Number of properly paired reads, {} (both reads in pair are mapped and "
@@ -530,7 +530,7 @@ MAPPING_METRICS = [
         "bp",
         "Estimated read length. Total number of input bases divided by the number of reads",
     ),
-    Metric("Insert length: mean", "Avg IS", "hid", "hid", "bp", "Mean insert size"),
+    Metric("Insert length: mean", "Avg IS", "hid", "#", "bp", "Mean insert size"),
     Metric("Insert length: median", "Med IS", "#", "#", "bp", "Median insert size", precision=0),
     Metric(
         "Insert length: standard deviation", "IS std", "hid", "hid", "bp", "Standard deviation of insert size deviation"
@@ -604,8 +604,8 @@ MAPPING_METRICS = [
         the_higher_the_worse=True,
     ),
     Metric("Q30 bases", "Q30", "#", "hid", "bases", "Number of raw bases with BQ >= 30, {}"),
-    Metric("Q30 bases R1", "Q30 R1", None, "hid", "bases", "Number of raw bases on R1 reads with BQ >= 30, {}"),
-    Metric("Q30 bases R2", "Q30 R2", None, "hid", "bases", "Number of raw bases on R2 reads with BQ >= 30, {}"),
+    Metric("Q30 bases R1", "Q30 R1", None, "#", "bases", "Number of raw bases on R1 reads with BQ >= 30, {}"),
+    Metric("Q30 bases R2", "Q30 R2", None, "#", "bases", "Number of raw bases on R2 reads with BQ >= 30, {}"),
     Metric(
         "Q30 bases (excl. dups & clipped bases)",
         "Q30 excl dup & clipped",

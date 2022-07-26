@@ -124,7 +124,7 @@ COV_METRICS = list(
                 Metric(
                     "Aligned reads in {}",
                     "Reads aligned on {}",
-                    "#",
+                    "hid",
                     "%",
                     "reads",
                     "Number of uniquely mapped reads to region relative to the number of uniquely mapped reads to the genome. When region is the target BED, this metric is equivalent to and replaces Capture Specificity based on target region.",
@@ -141,7 +141,7 @@ COV_METRICS = list(
                 Metric(
                     "Uniformity of coverage (PCT > 0.2*mean) over {}",
                     ">0.2×mean",
-                    "hid",
+                    "#",
                     "#",
                     "%",
                     "Percentage of sites with coverage greater than 20% of the mean coverage in region. Demonstrates the uniformity of coverage.",
@@ -230,7 +230,7 @@ COV_METRICS = list(
                 Metric(
                     "PCT of {} with coverage [20x:inf)",
                     "⩾20x in {}",
-                    "#",
+                    "hid",
                     "#",
                     "%",
                     "Percentage of sites in region with at least 20x coverage.",
@@ -246,7 +246,7 @@ COV_METRICS = list(
                 Metric(
                     "PCT of {} with coverage [100x:inf)",
                     "⩾100x in {}",
-                    "hid",
+                    "#",
                     "#",
                     "%",
                     "Percentage of sites in region with at least 100x coverage.",
@@ -255,7 +255,7 @@ COV_METRICS = list(
                     "PCT of {} with coverage [0x:1x)",
                     "0x in {}",
                     "#",
-                    "hid",
+                    "#",
                     "%",
                     "Percentage of sites in region with no coverage.",
                 ),

@@ -132,7 +132,7 @@ COV_METRICS = list(
                 Metric(
                     "Average alignment coverage over {}",
                     "Depth over {}",
-                    "#",
+                    "hid",
                     "#",
                     "x",
                     "Coverage depth over {}: number of uniquely mapped bases to {} divided by the number of sites in {}.",
@@ -140,8 +140,8 @@ COV_METRICS = list(
                 Metric(
                     "Uniformity of coverage (PCT > 0.2*mean) over {}",
                     ">0.2×mean",
-                    "#",
-                    "#",
+                    "hid",
+                    "hid",
                     "%",
                     "Percentage of sites with coverage greater than 20% of the mean coverage in region. Demonstrates the uniformity of coverage.",
                 ),
@@ -198,7 +198,7 @@ COV_METRICS = list(
                     "PCT of genome with coverage [1x:inf)",
                     "⩾1x in {}",
                     "hid",
-                    "#",
+                    "hid",
                     "%",
                     "Percentage of sites in region with at least 1x coverage.",
                 ),

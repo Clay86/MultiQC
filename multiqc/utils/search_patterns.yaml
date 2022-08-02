@@ -277,6 +277,8 @@ dragen/cnv:
   fn: "*.cnv_metrics.csv"
 dragen/time:
   fn: "*.time_metrics.csv"
+dragen/gc_metrics:
+  fn: "*.gc_metrics.csv"
 dragen/mapping_metrics:
   fn: "*.mapping_metrics.csv"
   contents: "Number of unique reads (excl. duplicate marked reads)"

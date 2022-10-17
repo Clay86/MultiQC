@@ -275,7 +275,7 @@ dragen/msi:
   fn: "*.microsat_output.json"
 dragen/cnv:
   fn: "*.cnv_metrics.csv"
-dragen/time:
+dragen/time_metrics:
   fn: "*.time_metrics.csv"
 dragen/gc_metrics:
   fn: "*.gc_metrics.csv"
@@ -283,6 +283,16 @@ dragen/mapping_metrics:
   fn: "*.mapping_metrics.csv"
   contents: "Number of unique reads (excl. duplicate marked reads)"
   num_lines: 50
+dragen/rna_quant_metrics:
+  fn: "*.quant.metrics.csv"
+dragen/rna_transcript_cov:
+  fn: "*.quant.transcript_coverage.txt"
+dragen/sc_atac_metrics:
+  fn: "*.scATAC.metrics.csv"
+dragen/sc_rna_metrics:
+  fn: "*.scRNA*metrics.csv"
+dragen/trimmer_metrics:
+  fn: "*.trimmer_metrics.csv"
 dragen_fastqc:
   fn: "*.fastqc_metrics.csv"
 eigenstratdatabasetools:

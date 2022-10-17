@@ -1,5 +1,6 @@
 run_modules:
   - dragen
+  - dragen_fastqc
 
 title: "QC Metrics Summary"
 intro_text: ""

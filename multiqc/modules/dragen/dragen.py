@@ -11,8 +11,13 @@ from .tmb import DragenTMBMetrics
 from .coverage_metrics_covRegion import DragenCoverageRegionMetrics
 from .cnv import DragenCNVMetrics
 from .msi import DragenMsiMetrics
-from .time_metrics import DragenTimeMetrics
 from .gc_metrics import DragenGCMetrics
+from .rna_quant_metrics import DragenRnaQuantMetrics
+from .rna_transcript_cov import DragenRnaTranscriptCoverage
+from .sc_atac_metrics import DragenScAtacMetrics
+from .sc_rna_metrics import DragenScRnaMetrics
+from .time_metrics import DragenTimeMetrics
+from .trimmer_metrics import DragenTrimmerMetrics
 
 log = logging.getLogger(__name__)
 
@@ -29,8 +34,14 @@ class MultiqcModule(
     DragenCoverageRegionMetrics,
     DragenCNVMetrics,
     DragenMsiMetrics,
-    DragenTimeMetrics,
     DragenGCMetrics,
+    DragenRnaQuantMetrics,
+    DragenRnaTranscriptCoverage,
+    DragenScAtacMetrics,
+    DragenScRnaMetrics,
+    DragenTimeMetrics,
+    DragenTrimmerMetrics
+
 ):
     """DRAGEN provides a number of differrent pipelines and outputs, including base calling, DNA and RNA alignment,
     post-alignment processing and variant calling, covering virtually all stages of typical NGS data processing.
@@ -106,14 +117,33 @@ class MultiqcModule(
         # <output prefix>.microsat_output.json
         samples_found |= self.add_msi_metrics()
 
-        # time metrics
-        # <output prefix>.time_metrics.csv
-        samples_found |= self.add_time_metrics()
-
         # gc metrics
         # <output prefix>.gc_metrics.csv
         samples_found |= self.add_gc_metrics()
 
+        # rna quant metrics
+        # <output prefix>.quant.metrics.csv
+        samples_found |= self.add_rna_metrics()
+
+        # rna transcript coverage
+        # <output prefix>.quant.transcript_coverage.txt
+        samples_found |= self.add_rna_transcript_coverage()
+
+        # single cell atac metrics
+        # <output prefix>.scATAC.metrics.csv
+        samples_found |= self.add_sc_atac_metrics()
+
+        # single cell rna metrics
+        # <output prefix>.scRNA*metrics.csv
+        samples_found |= self.add_sc_rna_metrics()
+
+        # dragen time metrics
+        # <output prefix>.time_metrics.csv
+        samples_found |= self.add_time_metrics()
+
+        #dragen trimmer metrics
+        # <output prefix.trimmer_metrics.csv
+        samples_found |= self.add_trimmer_metrics()
 
         if len(samples_found) == 0:
             raise UserWarning

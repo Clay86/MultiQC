@@ -1,232 +1,101 @@
-#!/usr/bin/env python
-from __future__ import print_function
-
-import re
-from collections import OrderedDict, defaultdict
-from multiqc.modules.base_module import BaseMultiqcModule
-from multiqc.plots import table
-
-from .utils import make_headers, Metric, exist_and_number
-
-# Initialise the logger
 import logging
+import re
+from collections import defaultdict
+
+from multiqc.modules.base_module import BaseMultiqcModule
+from multiqc.plots import bargraph
 
 log = logging.getLogger(__name__)
-
-
-NAMESPACE = "time metrics"
 
 
 class DragenTimeMetrics(BaseMultiqcModule):
     def add_time_metrics(self):
         data_by_sample = dict()
 
-        for f in self.find_log_files("dragen/time"):
+        for f in self.find_log_files("dragen/time_metrics"):
             s_name, data = parse_time_metrics_file(f)
             s_name = self.clean_s_name(s_name, f)
+
             if s_name in data_by_sample:
-                log.debug(f"Duplicate sample name found! Overwriting: {s_name}")
+                log.debug("Duplicate sample name found! Overwriting: {}".format(s_name))
             self.add_data_source(f, section="stats")
             data_by_sample[s_name] = data
 
         # Filter to strip out ignored sample names:
         data_by_sample = self.ignore_samples(data_by_sample)
+
         if not data_by_sample:
             return set()
 
-        # Write data to file
-        self.write_data_file(data_by_sample, "dragen_time")
-
-        all_metric_names = set()
-        for sn, sdata in data_by_sample.items():
-            for m in sdata.keys():
-                all_metric_names.add(m)
-
-        gen_stats_headers, time_table_headers = make_headers(all_metric_names, TIME_METRICS)
-
-        for s in data_by_sample:
-            for m in all_metric_names:
-                if m not in data_by_sample[s].keys():
-                    data_by_sample[s][m] = ""
-
-        self.general_stats_addcols(data_by_sample, gen_stats_headers, namespace=NAMESPACE)
-
-
         self.add_section(
             name="Time Metrics",
-            anchor="dragen-time",
-            description="""
-            Duration of the pipeline exectution.
-            """,
-            plot=table.plot(data_by_sample, time_table_headers, pconfig={"namespace": NAMESPACE}),
+            anchor="dragen-time-metrics",
+            description="Time metrics for DRAGEN run.  Total run time is less than the sum of individual "
+            "steps because of parallelization.",
+            plot=bargraph.plot(
+                [
+                    {
+                        sample: {
+                            step_name: step_time / 60
+                            for step_name, step_time in data.items()
+                            if step_name == "Total runtime"
+                        }
+                        for sample, data in data_by_sample.items()
+                    },
+                    {
+                        sample: {
+                            step_name[5:]: step_time / 60
+                            for step_name, step_time in data.items()
+                            if step_name != "Total runtime"
+                        }
+                        for sample, data in data_by_sample.items()
+                    },
+                ],
+                pconfig={
+                    "id": "time_metrics_plot",
+                    "title": "Dragen: Time Metrics",
+                    "ylab": "Time (minutes)",
+                    "cpswitch_counts_label": "Time (minutes)",
+                    "data_labels": [
+                        {
+                            "name": "Total Runtime",
+                            "ylab": "Time (minutes)",
+                            "cpswitch_counts_label": "Time (minutes)",
+                        },
+                        {
+                            "name": "Steps Breakdown",
+                            "ylab": "Time (minutes)",
+                            "cpswitch_counts_label": "Time (minutes)",
+                        },
+                    ],
+                },
+            ),
         )
+
         return data_by_sample.keys()
-
-
-TIME_METRICS = [
-    Metric (
-        m.id,
-        m.title,
-        in_genstats=m.in_genstats,
-        in_own_tabl=m.in_own_tabl,
-        descr=m.descr,
-        unit=m.unit,
-        namespace=m.namespace or NAMESPACE,
-        the_higher_the_worse=m.the_higher_the_worse,
-    )
-    for m in [
-        Metric(
-            "Total runtime",
-            "Total runtime",
-            'hid',
-            '#',
-            descr="Total runtime"
-        ),
-        Metric(
-            "Time loading reference",
-            "Time loading reference",
-            None,
-            'hid',
-            descr="Time loading reference"
-        ),
-        Metric(
-            "Time aligning reads",
-            "Time aligning reads",
-            None,
-            'hid',
-            descr="Time aligning reads"
-        ),
-        Metric(
-            "Time duplicate marking",
-            "Time duplicate marking",
-            None,
-            'hid',
-            descr="Time duplicate marking"
-        ),
-        Metric(
-            "Time sorting and marking duplicates",
-            "Time sorting and marking duplicates",
-            None,
-            'hid',
-            descr="Time sorting and marking duplicates"
-        ),
-        Metric(
-            "Time DRAGStr calibration",
-            "Time DRAGStr calibration",
-            None,
-            'hid',
-            descr="Time DRAGStr calibration"
-        ),
-        Metric(
-            "Time saving map/align output",
-            "Time saving map/align output",
-            None,
-            'hid',
-            descr="Time saving map/align output"
-        ),
-        Metric(
-            "Time partial reconfiguration",
-            "Time partial reconfiguration",
-            None,
-            'hid',
-            descr="Time partial reconfiguration"
-        ),
-        Metric(
-            "Time processing depth of coverage",
-            "Time processing depth of coverage",
-            None,
-            'hid',
-            descr="Time processing depth of coverage"
-        ),
-        Metric(
-            "Time variant calling",
-            "Time variant calling",
-            'hid',
-            '#',
-            descr="Time variant calling"
-        ),
-        Metric(
-            "Time calculating target counts",
-            "Time calculating target counts",
-            'hid',
-            '#',
-            descr="Time calculating target counts"
-        ),
-        Metric(
-            "Time correcting GC bias",
-            "Time correcting GC bias",
-            'hid',
-            '#',
-            descr="Time correcting GC bias"
-        ),
-        Metric(
-            "Time normalizing case sample",
-            "Time normalizing case sample",
-            None,
-            'hid',
-            descr="Time normalizing case sample"
-        ),
-        Metric(
-            "Time performing segmentation",
-            "Time performing segmentation",
-            'hid',
-            '#',
-            descr="Time performing segmentation"
-        ),
-        Metric(
-            "Time generating CNV calls",
-            "Time generating CNV calls",
-            'hid',
-            '#',
-            descr="Time generating CNV calls"
-        ),
-        Metric(
-            "Time generating CNV track files",
-            "Time generating CNV track files",
-            None,
-            'hid',
-            descr="Time generating CNV track files"
-        ),
-        Metric(
-            "Time partitioning",
-            "Time partitioning",
-            None,
-            'hid',
-            descr="Time partitioning"
-        ),
-        Metric(
-            "Time annotating outputs",
-            "Time annotating outputs",
-            'hid',
-            '#',
-            descr="Time annotating outputs"
-        ),
-        Metric(
-            "Time calculating TMB",
-            "Time calculating TMB",
-            'hid',
-            '#',
-            descr="Time calculating TMB"
-        ),
-    ]
-
-]
 
 
 def parse_time_metrics_file(f):
     """
-    """
+    sample.time_metrics.csv
 
-    s_name = re.search(r"(.*)\.time.metrics.csv", f["fn"]).group(1)
+    RUN TIME,,Time loading reference,00:01:31.289,91.29
+    RUN TIME,,Time aligning reads,00:00:25.190,25.19
+    RUN TIME,,Time duplicate marking,00:00:01.817,1.82
+    RUN TIME,,Time sorting and marking duplicates,00:00:07.368,7.37
+    RUN TIME,,Time DRAGStr calibration,00:00:07.069,7.07
+    """
+    s_name = re.search(r"(.*).time_metrics.csv", f["fn"]).group(1)
 
     data = defaultdict(dict)
-
     for line in f["f"].splitlines():
-        _, _, metric, _, stat = line.split(",")
+        tokens = line.split(",")
+        analysis, _, metric, timestr, seconds = tokens
+
         try:
-            stat = float(stat)
+            seconds = float(seconds)
         except ValueError:
             pass
-        data[metric] = stat
+        data[metric] = seconds
 
     return s_name, data

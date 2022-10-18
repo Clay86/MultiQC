@@ -1,6 +1,7 @@
 import logging
 import re
 from collections import defaultdict
+from typing import OrderedDict
 
 from multiqc.modules.base_module import BaseMultiqcModule
 from multiqc.plots import table
@@ -28,13 +29,15 @@ class DragenTrimmerMetrics(BaseMultiqcModule):
             return set()
 
         table_data = DragenTrimmerMetrics.__get_table_data(data_by_sample)
+        header = DragenTrimmerMetrics.get_header(table_data)
+
         self.add_section(
             name="Trimmer Metrics",
             anchor="trimmer-metrics",
             description="""
             Metrics on trimmed reads.
             """,
-            plot=table.plot(table_data),
+            plot=table.plot(table_data, header),
         )
 
         return data_by_sample.keys()
@@ -50,10 +53,32 @@ class DragenTrimmerMetrics(BaseMultiqcModule):
             trimmer_data[sample] = {}
             for metric, stat in data[analysis].items():
                 number, percentage = stat
-                display_stat = f"{number} ({percentage}%)" if percentage else f"{number}"
-                trimmer_data[sample][metric] = display_stat
+                trimmer_data[sample][metric] = number
+                if percentage:
+                    trimmer_data[sample][metric + " (in %)"] = percentage
 
         return trimmer_data
+
+    def get_header(trimmer_data):
+        shown = ["Average input read length", "Total trimmed reads (in %)", "Total trimmed bases (in %)", "Total filtered reads (in %)", \
+            "Average bases trimmed per read", "Average bases trimmed per trimmed read", "Remaining poly-G K-mers R1 3prime (in %)", \
+            "Remaining poly-G K-mers R2 3prime (in %)", "Quality trimmed reads filtered R1 3prime (in %)", "Quality trimmed reads filtered R2 3prime (in %)", \
+            "Adapter trimmed reads filtered R1 3prime (in %)", "Adapter trimmed reads filtered R2 3prime (in %)"]
+        header = []
+
+        first_sample = list(trimmer_data.keys())[0]
+        for key in trimmer_data[first_sample].keys():
+            if key in shown:
+                hidden = False
+            else:
+                hidden = True
+            if "%" in key:
+                to_add = {"suffix": '%'}
+            else:
+                to_add = {"scale" : "Greens"}
+            header.append((key, dict({"title": key, "description": key, "hidden": hidden}, **to_add)))
+
+        return OrderedDict(header)
 
 
 def parse_trimmer_metrics_file(f):

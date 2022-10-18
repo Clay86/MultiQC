@@ -1,9 +1,11 @@
 import logging
 import re
 from collections import defaultdict
+from typing import OrderedDict
 
 from multiqc.modules.base_module import BaseMultiqcModule
 from multiqc.plots import linegraph, table
+
 
 log = logging.getLogger(__name__)
 
@@ -88,6 +90,20 @@ class DragenGcMetrics(BaseMultiqcModule):
             summary_data[sample_name] = {metric: stat for metric, stat in sample_data[analysis].items()}
 
         return summary_data
+
+    def get_header(trimmer_data):
+        shown = ["Number of valid windows", "Average reference GC", "AT Dropout", "GC Dropout"]
+        header = []
+
+        first_sample = list(trimmer_data.keys())[0]
+        for key in trimmer_data[first_sample].keys():
+            if key in shown:
+                hidden = False
+            else:
+                hidden = True
+            header.append((key, {"title": key, "description": key, "hidden": hidden}))
+
+        return OrderedDict(header)
 
 
 def parse_gc_metrics_file(f):

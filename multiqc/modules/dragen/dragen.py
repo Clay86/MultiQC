@@ -4,14 +4,14 @@ from .coverage_hist import DragenCoverageHist
 from .coverage_metrics import DragenCoverageMetrics
 from .coverage_per_contig import DragenCoveragePerContig
 from .fragment_length import DragenFragmentLength
-from .mapping_metrics import DragenMappingMetics
+from .mapping_metrics import DragenMappingMetrics
 from .ploidy_estimation_metrics import DragenPloidyEstimationMetrics
 from .vc_metrics import DragenVCMetrics
 from .tmb import DragenTMBMetrics
 from .coverage_metrics_covRegion import DragenCoverageRegionMetrics
 from .cnv import DragenCNVMetrics
 from .msi import DragenMsiMetrics
-from .gc_metrics import DragenGCMetrics
+from .gc_metrics import DragenGcMetrics
 from .rna_quant_metrics import DragenRnaQuantMetrics
 from .rna_transcript_cov import DragenRnaTranscriptCoverage
 from .sc_atac_metrics import DragenScAtacMetrics
@@ -23,7 +23,7 @@ log = logging.getLogger(__name__)
 
 
 class MultiqcModule(
-    DragenMappingMetics,
+    DragenMappingMetrics,
     DragenFragmentLength,
     DragenPloidyEstimationMetrics,
     DragenVCMetrics,
@@ -34,7 +34,7 @@ class MultiqcModule(
     DragenCoverageRegionMetrics,
     DragenCNVMetrics,
     DragenMsiMetrics,
-    DragenGCMetrics,
+    DragenGcMetrics,
     DragenRnaQuantMetrics,
     DragenRnaTranscriptCoverage,
     DragenScAtacMetrics,
@@ -43,14 +43,14 @@ class MultiqcModule(
     DragenTrimmerMetrics
 
 ):
-    """DRAGEN provides a number of differrent pipelines and outputs, including base calling, DNA and RNA alignment,
+    """DRAGEN provides a number of different pipelines and outputs, including base calling, DNA and RNA alignment,
     post-alignment processing and variant calling, covering virtually all stages of typical NGS data processing.
     However, it can be treated as a fast aligner with additional features on top, as users will unlikely use any
     features without enabling DRAGEN mapping. So we will treat this module as an alignment tool module and
     place it accordingly in the module_order list, in docs, etc.
 
     The QC metrics DRAGEN generates resemble those of samtools-stats, qualimap, mosdepth, bcftools-stats and alike.
-    Whenver possible, the visual output is made similar to those modules.
+    Whenever possible, the visual output is made similar to those modules.
 
     Note that this MultiQC module supports some of DRAGEN output but not all. Contributions are welcome!
 
@@ -119,7 +119,7 @@ class MultiqcModule(
 
         # gc metrics
         # <output prefix>.gc_metrics.csv
-        samples_found |= self.add_gc_metrics()
+        samples_found |= self.add_gc_metrics_hist()
 
         # rna quant metrics
         # <output prefix>.quant.metrics.csv
@@ -142,7 +142,7 @@ class MultiqcModule(
         samples_found |= self.add_time_metrics()
 
         #dragen trimmer metrics
-        # <output prefix.trimmer_metrics.csv
+        # <output prefix>.trimmer_metrics.csv
         samples_found |= self.add_trimmer_metrics()
 
         if len(samples_found) == 0:

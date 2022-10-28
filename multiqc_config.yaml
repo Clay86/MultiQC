@@ -6,10 +6,16 @@ title: "QC Metrics Summary"
 intro_text: ""
 
 report_header_info:
-  - Contact E-mail: "dummy@tyrolpath.at"
   - Application Type: "Whole Exome Sequencing"
   - Sequencing Platform: "Illumina NovaSeq6000"
   - Sequencing Setup: "2x150"
+
+top_modules:
+  - "dragen"
+
+custom_logo: "tp_logo.png"
+custom_logo_url: "https://tyrolpath.at/"
+custom_logo_title: "Tyrolpath Obrist Brunhuber GmbH"
 
 custom_plot_config:
   # Add a coloured band in the background to show what is a good result

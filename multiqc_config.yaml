@@ -7,8 +7,10 @@ intro_text: ""
 
 report_header_info:
   - Application Type: "Whole Exome Sequencing"
+  - Sequencing Facility: "Tyrolpath Obrist Brunhuber GmbH"
   - Sequencing Platform: "Illumina NovaSeq6000"
   - Sequencing Setup: "2x150"
+  - Contact Email: "molpath@tyrolpath.at"
 
 top_modules:
   - "dragen"

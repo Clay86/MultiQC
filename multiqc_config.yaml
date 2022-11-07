@@ -40,6 +40,20 @@ table_cond_formatting_rules:
       - lt: 300
     fail:
       - lt: 250
+  mqc-generalstats-dragen_coverage-Uniformity_of_coverage_PCT_0_2_mean_over_target_region:
+    warn:
+      - lt: 90
+  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_100x_inf:
+    warn:
+      - lt: 92
+  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_0x_1x:
+    warn:
+      - gt: 2
+  mqc-generalstats-dragen_mapping-Number_of_duplicate_marked_reads_pct:
+    warn:
+      - gt: 15
+    fail:
+      - gt: 20
   mqc-generalstats-dragen_mapping-Insert_length_median:
     warn:
       - lt: 170
@@ -47,30 +61,12 @@ table_cond_formatting_rules:
       - lt: 140
     warn:
       - gt: 250
-    fail:
-      - gt: 270
-  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_0x_1x:
-    warn:
-      - gt: 2.1
-    fail:
-      - gt: 2.4
-  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_100x_inf:
-    warn:
-      - lt: 92
-    fail:
-      - lt: 90
-  mqc-generalstats-dragen_mapping-Number_of_duplicate_marked_reads_pct:
-    warn:
-      - gt: 40
-    fail:
-      - gt: 50
   mqc-generalstats-dragen_mapping-Q30_bases_pct:
     warn:
       - lt: 88
     fail:
       - lt: 85
-  mqc-generalstats-dragen_coverage-Uniformity_of_coverage_PCT_0_2_mean_over_target_region:
+  mqc-generalstats-dragen_mapping-Q30_bases:
     warn:
-      - lt: 94
-    fail:
-      - lt: 93
+      - lt: 30000
+      - lt: 20000

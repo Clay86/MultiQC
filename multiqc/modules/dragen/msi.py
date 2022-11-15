@@ -80,14 +80,14 @@ msi_METRICS = [
         Metric(
             "TotalMicrosatelliteSitesUnstable",
             "Total Microsatellite Sites Unstable",
-            'hid',
+            '#',
             '#',
             descr="Total Microsatellite Sites Unstable"
         ),
         Metric(
             "PercentageUnstableSites",
             "Percentage Unstable MSI Sites",
-            '#',
+            'hid',
             '#',
             "%",
             descr="Percentage Unstable MSI Sites",
@@ -102,7 +102,7 @@ msi_METRICS = [
         Metric(
             "SumDistance",
             "SumDistance",
-            'hid',
+            None,
             '#',
             descr="Sum Distance"
         ),

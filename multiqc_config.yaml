@@ -1,0 +1,72 @@
+run_modules:
+  - dragen
+  - dragen_fastqc
+
+title: "QC Metrics Summary"
+intro_text: ""
+
+report_header_info:
+  - Application Type: "Whole Exome Sequencing"
+  - Sequencing Facility: "Tyrolpath Obrist Brunhuber GmbH"
+  - Sequencing Platform: "Illumina NovaSeq6000"
+  - Sequencing Setup: "2x150"
+  - Contact Email: "molpath@tyrolpath.at"
+
+top_modules:
+  - "dragen"
+
+custom_logo: "tp_logo.png"
+custom_logo_url: "https://tyrolpath.at/"
+custom_logo_title: "Tyrolpath Obrist Brunhuber GmbH"
+
+custom_plot_config:
+  # Add a coloured band in the background to show what is a good result
+  # Yes I know this doesn't make sense for this plot, it's just an example ;)
+  dragen_coverage_dist:
+    xPlotBands:
+      - from: 0
+        to: 250
+        color: "#CB433520"
+      - from: 250
+        to: 350
+        color: "#F4D03F20"
+      - from: 350
+        to: 3000
+        color: "#27AE6020"
+
+table_cond_formatting_rules:
+  mqc-generalstats-dragen_coverage-Average_alignment_coverage_over_target_region:
+    warn:
+      - lt: 300
+    fail:
+      - lt: 250
+  mqc-generalstats-dragen_coverage-Uniformity_of_coverage_PCT_0_2_mean_over_target_region:
+    warn:
+      - lt: 90
+  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_100x_inf:
+    warn:
+      - lt: 92
+  mqc-generalstats-dragen_coverage-PCT_of_target_region_with_coverage_0x_1x:
+    warn:
+      - gt: 2
+  mqc-generalstats-dragen_mapping-Number_of_duplicate_marked_reads_pct:
+    warn:
+      - gt: 15
+    fail:
+      - gt: 20
+  mqc-generalstats-dragen_mapping-Insert_length_median:
+    warn:
+      - lt: 170
+    fail:
+      - lt: 140
+    warn:
+      - gt: 250
+  mqc-generalstats-dragen_mapping-Q30_bases_pct:
+    warn:
+      - lt: 88
+    fail:
+      - lt: 85
+  mqc-generalstats-dragen_mapping-Q30_bases:
+    warn:
+      - lt: 30000
+      - lt: 20000

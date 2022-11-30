@@ -29,6 +29,7 @@ FIELD_DESCRIPTIONS = {
     "MEDIAN_TARGET_COVERAGE": "The median coverage of targets.",
     "NEAR_BAIT_BASES": "The number of PF aligned bases that mapped to within a fixed interval of a baited region, but not on a baited region.",
     "OFF_BAIT_BASES": "The number of PF aligned bases that mapped to neither on or near a bait.",
+    "PCT_OFF_BAIT": "The % of PF aligned bases that mapped to neither on or near a bait.",
     "OLD_80_BASE_PENALTY": 'The fold over-coverage necessary to raise 80% of bases in "non-zero-cvg" targets to the mean coverage level in those targets.',
     "ON_BAIT_BASES": "The number of PF aligned bases that mapped to a baited region of the genome.",
     "ON_BAIT_VS_SELECTED": "The percentage of on+near bait bases that are on as opposed to near.",
@@ -79,6 +80,7 @@ def parse_reports(self):
                 if fn_search:
                     s_name = os.path.basename(fn_search.group(1).strip("[]"))
                     s_name = self.clean_s_name(s_name, f)
+                    s_name = s_name.replace("_tumor", "") # to get them in same row as dragen metrics
                     parsed_data[s_name] = dict()
 
             if s_name is not None:
@@ -152,6 +154,57 @@ def parse_reports(self):
             "scale": "Blues",
             "suffix": " X",
         }
+        self.general_stats_headers["PCT_OFF_BAIT"] = {
+            "title": "% Off bait bases",
+            "suffix":"%",
+            "modify":lambda x: x * 100.0,
+            "the_higher_the_worse": "true"
+        }
+        self.general_stats_headers["ZERO_CVG_TARGETS_PCT"] = {
+            "title": "% Zero coverage targets",
+            "suffix":"%",
+            "modify":lambda x: x * 100.0,
+            "the_higher_the_worse": "true"
+        }
+        self.general_stats_headers["FOLD_80_BASE_PENALTY"] = {
+            "title": "Fold 80 base penalty",
+            "format": "{:,.2f}"
+        }
+        self.general_stats_headers["PCT_EXC_OVERLAP"] = {
+            "title": "% excluding overlap",
+            "modify":lambda x: x * 100.0,
+            "suffix":"%"
+        }
+        self.general_stats_headers["MEAN_TARGET_COVERAGE"] = {
+            "title": "mean target coverage",
+        }
+        self.general_stats_headers["PCT_EXC_DUPE"] = {
+            "title": "Duplicate rate",
+            "modify":lambda x: x * 100.0,
+            "suffix":"%"
+        }
+        self.general_stats_headers["PCT_TARGET_BASES_20X"] = {
+            "title": "% Target Bases 20X",
+            "modify":lambda x: x * 100.0,
+            "suffix":"%"
+        }
+        self.general_stats_headers["PCT_TARGET_BASES_30X"] = {
+            "title": "% Target bases >= 30X",
+            "modify":lambda x: x * 100.0,
+            "suffix":"%"
+        }
+        self.general_stats_headers["AT_DROPOUT"] = {
+            "title": "AT dropout",
+        }
+        self.general_stats_headers["GC_DROPOUT"] = {
+            "title": "GC dropout",
+        }
+        self.general_stats_headers["PCT_EXC_DUPE"] = {
+            "title": "Duplicate rate",
+            "modify":lambda x: x * 100.0,
+            "suffix":"%"
+        }
+
         try:
             covs = config.picard_config["general_stats_target_coverage"]
             assert type(covs) == list
@@ -233,6 +286,7 @@ def _get_table_headers(data):
             "HET_SNP_SENSITIVITY",
             "NEAR_BAIT_BASES",
             "OFF_BAIT_BASES",
+            "PCT_OFF_BAIT",
             "ON_BAIT_BASES",
             "ON_TARGET_BASES",
             "PCT_USABLE_BASES_ON_BAIT",

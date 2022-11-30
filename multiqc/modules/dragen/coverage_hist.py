@@ -1,15 +1,15 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
+
+import logging
 import re
 from collections import defaultdict
+
 from multiqc.modules.base_module import BaseMultiqcModule
 from multiqc.modules.qualimap.QM_BamQC import coverage_histogram_helptext, genome_fraction_helptext
 from multiqc.plots import linegraph
 
 # Initialise the logger
-import logging
-
 log = logging.getLogger(__name__)
 
 
@@ -144,5 +144,5 @@ def parse_fine_hist(f):
         cum_data[depth] = cum_pct
 
     m = re.search(r"(.*)\.(\S*)_fine_hist_?(\S*)?.csv", f["fn"])
-    sample, phenotype = m.group(1), m.group(2)
+    sample, phenotype = m.group(1), m.group(3)
     return sample, {phenotype: (data, cum_data, depth_1pc)}

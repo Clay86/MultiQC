@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 # coding=utf-8
-from __future__ import print_function
+
 
 import itertools
-from multiqc.utils.util_functions import write_data_file
+import logging
 import re
 from collections import defaultdict
+
 from multiqc.modules.base_module import BaseMultiqcModule
 from multiqc.plots import table
-from .utils import make_headers, Metric
+from multiqc.utils.util_functions import write_data_file
+
+from .utils import Metric, make_headers
 
 # Initialise the logger
-import logging
-
 log = logging.getLogger(__name__)
 
 
@@ -61,8 +62,7 @@ class DragenCoverageMetrics(BaseMultiqcModule):
             name="Coverage metrics",
             anchor="dragen-cov-metrics",
             description="""
-            Coverage metrics over a region (where the region can be a target region,
-            a QC coverage region, or the whole genome). Press the `Help` button for details.
+            Coverage metrics over a region (i.e. the whole genome). Press the `Help` button for details.
             """,
             helptext="""
             The following criteria are used when calculating coverage:
@@ -107,17 +107,7 @@ COV_METRICS = list(
                     descr=m.descr.replace("{}", "genome"),
                     namespace=NAMESPACE,
                     precision=m.precision,
-                ),
-                Metric(
-                    m.id.replace("{}", "genome"),
-                    m.title.replace("{}", "region"),
-                    in_genstats=m.in_genstats,
-                    in_own_tabl=m.in_own_tabl,
-                    unit=m.unit,
-                    descr=m.descr.replace("{}", "region"),
-                    namespace=NAMESPACE,
-                    precision=m.precision,
-                ),
+                )
             ]
             for m in [
                 # id_in_data                                            title (display name)  gen_stats  cov_table  unit  description  precision
@@ -142,8 +132,8 @@ COV_METRICS = list(
                 ),
                 Metric(
                     "Average alignment coverage over {}",
-                    "Depth",
-                    "#",
+                    "Depth over {}",
+                    "hid",
                     "#",
                     "x",
                     "Coverage depth over {}: number of uniquely mapped bases to {} divided by the number of sites in {}.",
@@ -152,9 +142,9 @@ COV_METRICS = list(
                     "Uniformity of coverage (PCT > 0.2*mean) over {}",
                     ">0.2×mean",
                     "hid",
-                    "#",
+                    "hid",
                     "%",
-                    "Percentage of sites with coverage greater than 20% of the mean coverage in region. Demonstrates the uniformity of coverage. The lower the better.",
+                    "Percentage of sites with coverage greater than 20% of the mean coverage in region. Demonstrates the uniformity of coverage.",
                 ),
                 Metric(
                     "Average chr X coverage over {}",
@@ -206,112 +196,112 @@ COV_METRICS = list(
                     precision=2,
                 ),
                 Metric(
-                    "PCT of genome with coverage [  1x: inf)",
-                    "⩾1x",
+                    "PCT of genome with coverage [1x:inf)",
+                    "⩾1x in {}",
                     "hid",
-                    "#",
+                    "hid",
                     "%",
                     "Percentage of sites in region with at least 1x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [  3x: inf)",
-                    "⩾3x",
+                    "PCT of genome with coverage [3x:inf)",
+                    "⩾3x in {}",
                     None,
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 3x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 10x: inf)",
-                    "⩾10x",
+                    "PCT of genome with coverage [10x:inf)",
+                    "⩾10x in {}",
                     None,
                     "#",
                     "%",
                     "Percentage of sites in region with at least 10x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 15x: inf)",
-                    "⩾15x",
+                    "PCT of genome with coverage [15x:inf)",
+                    "⩾15x in {}",
                     None,
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 15x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 20x: inf)",
-                    "⩾20x",
-                    "#",
+                    "PCT of genome with coverage [20x:inf)",
+                    "⩾20x in {}",
+                    "hid",
                     "#",
                     "%",
                     "Percentage of sites in region with at least 20x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 50x: inf)",
-                    "⩾50x",
+                    "PCT of genome with coverage [50x:inf)",
+                    "⩾50x in {}",
                     "hid",
                     "#",
                     "%",
                     "Percentage of sites in region with at least 50x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [100x: inf)",
-                    "⩾100x",
+                    "PCT of genome with coverage [100x:inf)",
+                    "⩾100x in {}",
                     "hid",
                     "#",
                     "%",
                     "Percentage of sites in region with at least 100x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [  0x:  1x)",
-                    "0x",
-                    None,
+                    "PCT of genome with coverage [0x:1x)",
+                    "0x in {}",
+                    "hid",
                     "hid",
                     "%",
                     "Percentage of sites in region with no coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [  1x:  3x)",
-                    "1x..3x",
+                    "PCT of genome with coverage [1x:3x)",
+                    "1x..3x in {}",
                     None,
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 1x but less than 3x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [  3x: 10x)",
-                    "3x..10x",
+                    "PCT of genome with coverage [3x:10x)",
+                    "3x..10x in {}",
                     None,
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 3x but less than 10x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 10x: 15x)",
-                    "10x..15x",
+                    "PCT of genome with coverage [10x:15x)",
+                    "10x..15x in {}",
                     None,
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 10x but less than 15x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 15x: 20x)",
-                    "15x..20x",
+                    "PCT of genome with coverage [15x:20x)",
+                    "15x..20x in {}",
                     None,
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 15x but less than 20x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 20x: 50x)",
-                    "20x..50x",
+                    "PCT of genome with coverage [20x:50x)",
+                    "20x..50x in {}",
                     "hid",
                     "hid",
                     "%",
                     "Percentage of sites in region with at least 20x but less than 50x coverage.",
                 ),
                 Metric(
-                    "PCT of genome with coverage [ 50x:100x)",
-                    "50x..100x",
+                    "PCT of genome with coverage [50x:100x)",
+                    "50x..100x in {}",
                     "hid",
                     "hid",
                     "%",
@@ -341,21 +331,21 @@ def parse_coverage_metrics(f):
     COVERAGE SUMMARY,,Aligned bases in genome,250311219292,100.00
     COVERAGE SUMMARY,,Average alignment coverage over genome,82.09
     COVERAGE SUMMARY,,Uniformity of coverage (PCT > 0.2*mean) over genome,95.58
-    COVERAGE SUMMARY,,PCT of genome with coverage [100x: inf),22.67
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 50x: inf),89.33
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 20x: inf),95.44
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 15x: inf),95.68
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 10x: inf),95.92
-    COVERAGE SUMMARY,,PCT of genome with coverage [  3x: inf),96.44
-    COVERAGE SUMMARY,,PCT of genome with coverage [  1x: inf),96.91
-    COVERAGE SUMMARY,,PCT of genome with coverage [  0x: inf),100.00
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 50x:100x),66.66
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 20x: 50x),6.10
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 15x: 20x),0.24
-    COVERAGE SUMMARY,,PCT of genome with coverage [ 10x: 15x),0.24
-    COVERAGE SUMMARY,,PCT of genome with coverage [  3x: 10x),0.52
-    COVERAGE SUMMARY,,PCT of genome with coverage [  1x:  3x),0.47
-    COVERAGE SUMMARY,,PCT of genome with coverage [  0x:  1x),3.09
+    COVERAGE SUMMARY,,PCT of genome with coverage [100x:inf),22.67
+    COVERAGE SUMMARY,,PCT of genome with coverage [50x:inf),89.33
+    COVERAGE SUMMARY,,PCT of genome with coverage [20x:inf),95.44
+    COVERAGE SUMMARY,,PCT of genome with coverage [15x:inf),95.68
+    COVERAGE SUMMARY,,PCT of genome with coverage [10x:inf),95.92
+    COVERAGE SUMMARY,,PCT of genome with coverage [3x:inf),96.44
+    COVERAGE SUMMARY,,PCT of genome with coverage [1x:inf),96.91
+    COVERAGE SUMMARY,,PCT of genome with coverage [0x:inf),100.00
+    COVERAGE SUMMARY,,PCT of genome with coverage [50x:100x),66.66
+    COVERAGE SUMMARY,,PCT of genome with coverage [20x:50x),6.10
+    COVERAGE SUMMARY,,PCT of genome with coverage [15x:20x),0.24
+    COVERAGE SUMMARY,,PCT of genome with coverage [10x:15x),0.24
+    COVERAGE SUMMARY,,PCT of genome with coverage [3x:10x),0.52
+    COVERAGE SUMMARY,,PCT of genome with coverage [1x:3x),0.47
+    COVERAGE SUMMARY,,PCT of genome with coverage [0x:1x),3.09
     COVERAGE SUMMARY,,Average chr X coverage over genome,43.24
     COVERAGE SUMMARY,,Average chr Y coverage over genome,2.88
     COVERAGE SUMMARY,,Average mitochondrial coverage over genome,25675.54
@@ -374,6 +364,8 @@ def parse_coverage_metrics(f):
     for line in f["f"].splitlines():
         fields = line.split(",")
         metric = fields[2]
+        metric = metric.replace("[   ", "[").replace("[  ", "[").replace("[ ", "[")
+        metric = metric.replace(":   ", ":").replace(":  ", ":").replace(": ", ":")
         value = fields[3]
         try:
             value = int(value)
@@ -396,5 +388,5 @@ def parse_coverage_metrics(f):
             data[metric + " pct"] = percentage
 
     m = re.search(r"(.*)\.(\S*)_coverage_metrics_?(\S*)?.csv", f["fn"])
-    sample, phenotype = m.group(1), m.group(2)
+    sample, phenotype = m.group(1), m.group(3)
     return sample, {phenotype: data}
